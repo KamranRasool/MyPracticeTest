@@ -11,5 +11,5 @@ public interface EndPoints {
     @GET("/posts")
     Call<List<RetroPosts>> getAllPosts();
     @GET("posts/{id}/comments")
-    Call<RetroComments> getComments(@Path(value = "id", encoded = true) String Id);
+    Call<List<RetroComments>> getComments(@Path(value = "id", encoded = true) String Id);
 }
