@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommentsAdapter  extends RecyclerView.Adapter<CommentsAdapter.CustomViewHolder>{
@@ -17,7 +19,11 @@ public class CommentsAdapter  extends RecyclerView.Adapter<CommentsAdapter.Custo
         this.context = context;
         this.comments = comments;
     }
+    public void filterList(ArrayList<RetroComments> filterdComments) {
+        this.comments = filterdComments;
+        notifyDataSetChanged();
 
+    }
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

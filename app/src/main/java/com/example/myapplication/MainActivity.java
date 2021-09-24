@@ -9,12 +9,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityAdapt
     public RecyclerView recyclerView;
     public MainActivityAdapter adapter;
     public ArrayList<RetroPosts> arrayList;
+    public EditText editTextSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycle_view);
+        editTextSearch = findViewById(R.id.edit_search);
         EndPoints service = RetrofitClient.getRetrofitInstance().create(EndPoints.class);
         Call<List<RetroPosts>> call = service.getAllPosts();
         call.enqueue(new Callback<List<RetroPosts>>() {
@@ -44,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityAdapt
                     recyclerView.setLayoutManager(layoutManager);
                     recyclerView.setAdapter(adapter);
                     adapter.setClickListener(MainActivity.this);
-                    Toast.makeText(MainActivity.this, "Already saved", Toast.LENGTH_SHORT).show();
-
                 }else {
                     adapter = new MainActivityAdapter(MainActivity.this, response.body());
                     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
@@ -53,10 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityAdapt
                     recyclerView.setAdapter(adapter);
                     adapter.setClickListener(MainActivity.this);
                     saveArrayList((ArrayList<RetroPosts>) response.body(), "list");
-                    Toast.makeText(MainActivity.this, "New saved", Toast.LENGTH_SHORT).show();
-
+                    arrayList = getArrayList("list");
                 }
-
             }
 
             @Override
@@ -64,7 +63,34 @@ public class MainActivity extends AppCompatActivity implements MainActivityAdapt
                 Toast.makeText(MainActivity.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
             }
         });
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                filter(editable.toString());
+            }
+        });
     }
+    private void filter(String text) {
+        ArrayList<RetroPosts> filterdPost = new ArrayList<>();
+
+        for (RetroPosts retroposts : arrayList) {
+            if (retroposts.getTitle().toLowerCase().contains(text.toLowerCase())) {
+                filterdPost.add(retroposts);
+            }
+        }
+        adapter.filterList(filterdPost);
+    }
+
 
     @Override
     public void onClick(View view, int position) {
@@ -78,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityAdapt
         Gson gson = new Gson();
         String json = gson.toJson(list);
         editor.putString(key, json);
-        editor.apply();     // This line is IMPORTANT !!!
+        editor.apply();
     }
 
     public ArrayList<RetroPosts> getArrayList(String key){

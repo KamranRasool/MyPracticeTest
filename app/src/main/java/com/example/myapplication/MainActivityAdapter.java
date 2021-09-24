@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapter.CustomViewHolder>{
@@ -20,7 +22,11 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         this.context = context;
         this.posts = posts;
     }
+    public void filterList(ArrayList<RetroPosts> filterdPosts) {
+        this.posts = filterdPosts;
+        notifyDataSetChanged();
 
+    }
     @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
